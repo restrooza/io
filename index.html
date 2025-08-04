@@ -6,72 +6,53 @@
   <title>Restrooza</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f7f7f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f3f9fb;
       color: #333;
-      padding: 40px 20px;
       text-align: center;
-    }
-
-    header {
-      margin-bottom: 40px;
+      padding: 20px;
     }
 
     h1 {
       font-size: 3rem;
       color: #20D2FF;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
-    p.description {
+    p {
       font-size: 1.2rem;
-      max-width: 600px;
-      margin: 0 auto;
+      margin-bottom: 30px;
     }
 
-    .screenshot {
-      margin-top: 40px;
+    a.download-button {
+      background-color: #20D2FF;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background-color 0.3s;
     }
 
-    .screenshot img {
-      max-width: 90%;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-
-    footer {
-      margin-top: 60px;
-      font-size: 0.9rem;
-      color: #777;
+    a.download-button:hover {
+      background-color: #18b0d8;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Restrooza</h1>
-    <p class="description">
-      Nowoczesna aplikacja wspierająca restauracje w zarządzaniu dostawami i kierowcami.  
-      Zautomatyzuj zamówienia, przydzielaj kierowców, śledź statusy – wszystko w jednej aplikacji.
-    </p>
-  </header>
+  <h1>Restrooza</h1>
+  <p>Aplikacja do dostaw</p>
 
-  <section class="screenshot">
-    <!-- Tutaj możesz wkleić zrzuty ekranu -->
-    <img src="logo.png" alt="Zrzut ekranu aplikacji Restrooza">
-  </section>
-
-  <footer>
-    &copy; 2025 Restrooza. Wszelkie prawa zastrzeżone.
-  </footer>
+  <a href="restrooza.apk" class="download-button" download>Pobierz aplikację</a>
 
 </body>
 </html>
