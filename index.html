@@ -62,10 +62,86 @@
       border-radius: 10px;
     }
 
-    .screenshots img {
-      max-width: 100%;
+    /* Karuzela screenshotów */
+    .carousel {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .carousel-track-container {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      user-select: none;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      display: block;
       border-radius: 10px;
-      margin-bottom: 20px;
+      pointer-events: none;
+    }
+
+    .carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(32, 210, 255, 0.8);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      padding: 0 12px;
+      cursor: pointer;
+      border-radius: 50%;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .carousel-button.prev {
+      left: 10px;
+    }
+
+    .carousel-button.next {
+      right: 10px;
+    }
+
+    .carousel-button:hover {
+      background: #18b0d8;
+    }
+
+    .carousel-nav {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .carousel-indicator {
+      background-color: #bbb;
+      border: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin: 0 6px;
+      cursor: pointer;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
+
+    .carousel-indicator.current-slide,
+    .carousel-indicator:hover {
+      background-color: #20D2FF;
     }
 
     .pricing ul {
@@ -211,8 +287,43 @@
 
   <section class="screenshots">
     <h2>Zrzuty ekranu</h2>
-    <p style="text-align:center;">(Tutaj możesz dodać obrazy aplikacji)</p>
-    <!-- <img src="screenshot1.png" alt="Ekran główny aplikacji"> -->
+    <div class="carousel">
+      <button class="carousel-button prev" aria-label="Poprzedni obrazek">&#10094;</button>
+      
+      <div class="carousel-track-container">
+        <ul class="carousel-track">
+          <li class="carousel-slide current-slide">
+            <img src="obraz1.jpg" alt="Mapa dostawy" />
+          </li>
+          <li class="carousel-slide">
+            <img src="obraz6.jpg" alt="Panel dostaw kierowcy" />
+          </li>
+          <li class="carousel-slide">
+            <img src="obraz2.jpg" alt="Dodawanie zamówienia" />
+          </li>
+          <li class="carousel-slide">
+            <img src="obraz3.jpg" alt="Informacje o zamówieniu" />
+          </li>
+          <li class="carousel-slide">
+            <img src="obraz4.jpg" alt="Zarządzanie kierowcami" />
+          </li>
+          <li class="carousel-slide">
+            <img src="obraz5.jpg" alt="Statystyki kierowcy" />
+          </li>
+        </ul>
+      </div>
+      
+      <button class="carousel-button next" aria-label="Następny obrazek">&#10095;</button>
+    </div>
+    
+    <div class="carousel-nav">
+      <button class="carousel-indicator current-slide" aria-label="Obrazek 1"></button>
+      <button class="carousel-indicator" aria-label="Obrazek 2"></button>
+      <button class="carousel-indicator" aria-label="Obrazek 3"></button>
+      <button class="carousel-indicator" aria-label="Obrazek 4"></button>
+      <button class="carousel-indicator" aria-label="Obrazek 5"></button>
+      <button class="carousel-indicator" aria-label="Obrazek 6"></button>
+    </div>
   </section>
 
   <section class="pricing">
@@ -229,7 +340,7 @@
         <p>200 zł / miesiąc</p>
       </li>
       <li>
-      <h3>Pro</h3>
+        <h3>Pro</h3>
         <p>Powyżej 5 dostawców</p>
         <p>300 zł / miesiąc</p>
       </li>
@@ -274,8 +385,165 @@
     <p><a href="regulamin.html">Regulamin</a> | <a href="polityka-prywatnosci.html">Polityka prywatności</a></p>
   </footer>
 
+  <script>
+    const track = document.querySelector('.carousel-track');
+    const slides = Array.from(track.children);
+    const nextButton = document.querySelector('.carousel-button.next');
+    const prevButton = document.querySelector('.carousel-button.prev');
+    const nav = document.querySelector('.carousel-nav');
+    const dots = Array.from(nav.children);
+
+    const slideWidth = slides[0].getBoundingClientRect().width;
+
+    // Ustaw pozycję slajdów obok siebie
+    slides.forEach((slide, index) => {
+      slide.style.left = slideWidth * index + 'px';
+    });
+
+    const moveToSlide = (track, currentSlide, targetSlide) => {
+      track.style.transform = 'translateX(-' + targetSlide.style.left + ')';
+      currentSlide.classList.remove('current-slide');
+      targetSlide.classList.add('current-slide');
+    };
+
+    const updateDots = (currentDot, targetDot) => {
+      currentDot.classList.remove('current-slide');
+      targetDot.classList.add('current-slide');
+    };
+
+    const hideShowArrows = (slides, prevButton, nextButton, targetIndex) => {
+      if (targetIndex === 0) {
+        prevButton.style.display = 'none';
+        nextButton.style.display = 'block';
+      } else if (targetIndex === slides.length -1) {
+        prevButton.style.display = 'block';
+        nextButton.style.display = 'none';
+      } else {
+        prevButton.style.display = 'block';
+        nextButton.style.display = 'block';
+      }
+    };
+
+    // Ukryj przycisk prev na start
+    prevButton.style.display = 'none';
+
+    // Automatyczne przesuwanie co 5 sekund
+    let autoSlideInterval = setInterval(() => {
+      const currentSlide = track.querySelector('.current-slide');
+      let nextSlide = currentSlide.nextElementSibling;
+      if (!nextSlide) nextSlide = slides[0];
+
+      const currentDot = nav.querySelector('.current-slide');
+      let nextDot = currentDot.nextElementSibling;
+      if (!nextDot) nextDot = dots[0];
+
+      const nextIndex = slides.findIndex(slide => slide === nextSlide);
+
+      moveToSlide(track, currentSlide, nextSlide);
+      updateDots(currentDot, nextDot);
+      hideShowArrows(slides, prevButton, nextButton, nextIndex);
+    }, 5000);
+
+    // Kliknięcie w next
+    nextButton.addEventListener('click', e => {
+      clearInterval(autoSlideInterval);
+      const currentSlide = track.querySelector('.current-slide');
+      let nextSlide = currentSlide.nextElementSibling;
+      if (!nextSlide) nextSlide = slides[0];
+
+      const currentDot = nav.querySelector('.current-slide');
+      let nextDot = currentDot.nextElementSibling;
+      if (!nextDot) nextDot = dots[0];
+
+      const nextIndex = slides.findIndex(slide => slide === nextSlide);
+
+      moveToSlide(track, currentSlide, nextSlide);
+      updateDots(currentDot, nextDot);
+      hideShowArrows(slides, prevButton, nextButton, nextIndex);
+
+      autoSlideInterval = setInterval(() => {
+        const currentSlide = track.querySelector('.current-slide');
+        let nextSlide = currentSlide.nextElementSibling;
+        if (!nextSlide) nextSlide = slides[0];
+
+        const currentDot = nav.querySelector('.current-slide');
+        let nextDot = currentDot.nextElementSibling;
+        if (!nextDot) nextDot = dots[0];
+
+        const nextIndex = slides.findIndex(slide => slide === nextSlide);
+
+        moveToSlide(track, currentSlide, nextSlide);
+        updateDots(currentDot, nextDot);
+        hideShowArrows(slides, prevButton, nextButton, nextIndex);
+      }, 5000);
+    });
+
+    // Kliknięcie w prev
+    prevButton.addEventListener('click', e => {
+      clearInterval(autoSlideInterval);
+      const currentSlide = track.querySelector('.current-slide');
+      let prevSlide = currentSlide.previousElementSibling;
+      if (!prevSlide) prevSlide = slides[slides.length -1];
+
+      const currentDot = nav.querySelector('.current-slide');
+      let prevDot = currentDot.previousElementSibling;
+      if (!prevDot) prevDot = dots[dots.length -1];
+
+      const prevIndex = slides.findIndex(slide => slide === prevSlide);
+
+      moveToSlide(track, currentSlide, prevSlide);
+      updateDots(currentDot, prevDot);
+      hideShowArrows(slides, prevButton, nextButton, prevIndex);
+
+      autoSlideInterval = setInterval(() => {
+        const currentSlide = track.querySelector('.current-slide');
+        let nextSlide = currentSlide.nextElementSibling;
+        if (!nextSlide) nextSlide = slides[0];
+
+        const currentDot = nav.querySelector('.current-slide');
+        let nextDot = currentDot.nextElementSibling;
+        if (!nextDot) nextDot = dots[0];
+
+        const nextIndex = slides.findIndex(slide => slide === nextSlide);
+
+        moveToSlide(track, currentSlide, nextSlide);
+        updateDots(currentDot, nextDot);
+        hideShowArrows(slides, prevButton, nextButton, nextIndex);
+      }, 5000);
+    });
+
+    // Kliknięcie w kropkę
+    nav.addEventListener('click', e => {
+      if (e.target === nav) return;
+
+      clearInterval(autoSlideInterval);
+      const targetDot = e.target;
+      const currentSlide = track.querySelector('.current-slide');
+      const currentDot = nav.querySelector('.current-slide');
+      const targetIndex = dots.findIndex(dot => dot === targetDot);
+      const targetSlide = slides[targetIndex];
+
+      moveToSlide(track, currentSlide, targetSlide);
+      updateDots(currentDot, targetDot);
+      hideShowArrows(slides, prevButton, nextButton, targetIndex);
+
+      autoSlideInterval = setInterval(() => {
+        const currentSlide = track.querySelector('.current-slide');
+        let nextSlide = currentSlide.nextElementSibling;
+        if (!nextSlide) nextSlide = slides[0];
+
+        const currentDot = nav.querySelector('.current-slide');
+        let nextDot = currentDot.nextElementSibling;
+        if (!nextDot) nextDot = dots[0];
+
+        const nextIndex = slides.findIndex(slide => slide === nextSlide);
+
+        moveToSlide(track, currentSlide, nextSlide);
+        updateDots(currentDot, nextDot);
+        hideShowArrows(slides, prevButton, nextButton, nextIndex);
+      }, 5000);
+    });
+  </script>
+
 </body>
 </html>
-
-
-
